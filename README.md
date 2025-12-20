@@ -6,6 +6,8 @@ Requires [Obsidian 1.10.6](https://obsidian.md/changelog/2025-11-25-desktop-v1.1
 
 Adds a kanban layout to [Obsidian Bases](https://help.obsidian.md/bases) so you can display notes as cards organized in columns.
 
+![Bases Kanban Screenshot](screenshot.png)
+
 ## Features
 
 -   **Display notes as cards** grouped by a property value (e.g., status, priority)
