@@ -3,7 +3,7 @@
 	"name": "Bases Kanban",
 	"version": "0.1.0",
 	"minAppVersion": "1.10.0",
-	"description": "Adds a kanban layout to Obsidian Bases.",
-	"author": "Ehsan",
+	"description": "Adds a kanban layout to Bases.",
+	"author": "ewerx",
 	"isDesktopOnly": false
 }
