@@ -211,37 +211,57 @@ export class KanbanView extends BasesView {
 	private renderCard(container: HTMLElement, entry: BasesEntry, columnName: string, cardIndex: number): void {
 		const cardEl = container.createDiv({ cls: 'bases-kanban-card' });
 
+		// Add colored accent bar if labels exist
+		const labelsProp = 'note.labels' as BasesPropertyId;
+		const labelsValue = entry.getValue(labelsProp);
+		
+		if (labelsValue && labelsValue.toString()) {
+			const labelStr = labelsValue.toString();
+			const firstLabel = labelStr.split(',')[0].trim();
+			
+			if (firstLabel) {
+				const color = this.getLabelColor(firstLabel);
+				cardEl.style.borderLeft = `6px solid ${color}`;
+				cardEl.style.backgroundColor = `color-mix(in srgb, ${color} 10%, var(--kanban-card-bg))`;
+			}
+		}
+
 		// Store data attributes for drag & drop
 		cardEl.dataset.filePath = entry.file.path;
 		cardEl.dataset.columnName = columnName;
 		cardEl.dataset.cardIndex = String(cardIndex);
 
-		// Card title (always file name)
-		const titleEl = cardEl.createDiv({ cls: 'bases-kanban-card-title' });
-		const filePath = entry.file.path;
+		// Render Header: First Property as Title (Clickable)
+		const headerEl = cardEl.createDiv({ cls: 'bases-kanban-card-header' });
 		
-		const link = titleEl.createEl('a', { 
-			text: entry.file.basename,
-			cls: 'internal-link'
-		});
-		link.addEventListener('click', (evt) => {
-			evt.preventDefault();
-			void this.app.workspace.openLinkText(filePath, '', evt.ctrlKey || evt.metaKey);
-		});
-
-		// Render visible properties from the Properties panel
+		// Visible properties
 		const visibleProperties = this.data?.properties ?? [];
-		
-		// Filter out file.name since we already show the title
-		const propertiesToShow = visibleProperties.filter(prop => prop !== 'file.name');
-		
-		if (propertiesToShow.length > 0) {
-			const propsEl = cardEl.createDiv({ cls: 'bases-kanban-card-properties' });
+		const propsEl = cardEl.createDiv({ cls: 'bases-kanban-card-properties' });
+
+		if (visibleProperties.length > 0) {
+			// The first visible property becomes the bold "Title"
+			const firstPropId = visibleProperties[0];
+			const firstValue = entry.getValue(firstPropId);
 			
-			for (const propId of propertiesToShow) {
+			if (firstValue && !(firstValue instanceof NullValue)) {
+				const titleContainer = headerEl.createDiv({ cls: 'bases-kanban-card-title' });
+				const titleLink = titleContainer.createEl('a', {
+					text: this.formatValue(firstValue),
+					cls: 'internal-link'
+				});
+				
+				titleLink.addEventListener('click', (evt) => {
+					evt.preventDefault();
+					evt.stopPropagation();
+					void this.app.workspace.openLinkText(entry.file.path, '', true);
+				});
+			}
+
+			// Render remaining properties as rows below
+			const remainingProps = visibleProperties.slice(1);
+			for (const propId of remainingProps) {
 				const value = entry.getValue(propId);
 				if (value === null || value instanceof NullValue) continue;
-				
 				this.renderPropertyRow(propsEl, propId, value);
 			}
 		}
@@ -303,6 +323,15 @@ export class KanbanView extends BasesView {
 		
 		// Default
 		return 'text';
+	}
+
+	private getLabelColor(label: string): string {
+		let hash = 0;
+		for (let i = 0; i < label.length; i++) {
+			hash = label.charCodeAt(i) + ((hash << 5) - hash);
+		}
+		const h = Math.abs(hash % 360);
+		return `hsl(${h}, 70%, 50%)`;
 	}
 
 	private formatValue(value: Value): string {

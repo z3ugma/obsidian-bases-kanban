@@ -138,14 +138,53 @@ body {
 	min-height: 0; /* Important for scroll to work */
 }
 
+.bases-kanban-card-header {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	margin-bottom: var(--size-4-1);
+}
+
+.bases-kanban-card-open-icon {
+	color: var(--text-muted);
+	padding: 2px;
+	border-radius: var(--radius-s);
+}
+
+.bases-kanban-card-open-icon:hover {
+	color: var(--text-normal);
+	background-color: var(--background-modifier-hover);
+}
+
+.bases-kanban-card-title {
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-bold);
+	color: var(--text-normal);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bases-kanban-card-title a.internal-link {
+	text-decoration: none;
+	color: inherit;
+	font-weight: inherit;
+}
+
+.bases-kanban-card-title a.internal-link:hover {
+	color: var(--text-accent);
+	text-decoration: underline;
+}
+
 /* Individual card */
 .bases-kanban-card {
 	background-color: var(--kanban-card-bg);
 	border: 1px solid var(--kanban-card-border);
 	border-radius: var(--radius-s);
 	padding: var(--size-4-2) var(--size-4-3);
-	cursor: pointer;
+	cursor: grab;
 	transition: box-shadow 0.15s ease, border-color 0.15s ease;
+	position: relative;
 }
 
 .bases-kanban-card:hover {
